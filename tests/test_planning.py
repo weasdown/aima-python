@@ -631,7 +631,7 @@ def test_hierarchical_search():
 
 
 def test_convert_angelic_HLA():
-    """ 
+    """
     Converts angelic HLA's into expressions that correspond to their actions
     ~ : Delete (Not)
     $+ : Possibly add (PosYes)
@@ -659,8 +659,8 @@ def test_is_primitive():
 
 
 def test_angelic_action():
-    """ 
-    Finds the HLA actions that correspond to the HLA actions with angelic semantics 
+    """
+    Finds the HLA actions that correspond to the HLA actions with angelic semantics
 
     h1 : precondition positive: B                                  _______  (add A) or (add A and remove B)
          effect: add A and possibly remove B
@@ -772,3 +772,47 @@ def test_angelic_search():
 
 if __name__ == '__main__':
     pytest.main()
+
+
+def pddl_test_case(domain_file, problem_file, expected_solution):
+    domain = DomainParser()
+    domain.read(domain_file)
+
+    problem = ProblemParser()
+    problem.read(problem_file)
+
+    initial_kb = PlanningKB(problem.goals, problem.initial_state)
+    planning_actions = [STRIPSAction(name, preconds, effects) for name, preconds, effects in domain.actions]
+    prob = PlanningSearchProblem(initial_kb, planning_actions)
+    found_solution = astar_search(prob).solution()
+
+    for action, expected_action in zip(found_solution, expected_solution):
+        assert(action == expected_action)
+
+
+def test_pddl_have_cake_and_eat_it_too():
+    """ Negative precondition test for total-order planner. """
+    pddl_dir = os.path.join(os.getcwd(), 'pddl_files')
+    domain_file = pddl_dir + os.sep + 'cake-domain.pddl'
+    problem_file = pddl_dir + os.sep + 'cake-problem.pddl'
+    expected_solution = [expr('Eat(Cake)'), expr('Bake(Cake)')]
+    pddl_test_case(domain_file, problem_file, expected_solution)
+
+
+def test_pddl_change_flat_tire():
+    """ Positive precondition test for total-order planner. """
+    pddl_dir = os.path.join(os.getcwd(), 'pddl_files')
+    domain_file = pddl_dir + os.sep + 'spare-tire-domain.pddl'
+    problem_file = pddl_dir + os.sep + 'spare-tire-problem.pddl'
+    expected_solution = [expr('Remove(Spare, Trunk)'), expr('Remove(Flat, Axle)'), expr('Put_on(Spare, Axle)')]
+    pddl_test_case(domain_file, problem_file, expected_solution)
+
+
+def test_pddl_sussman_anomaly():
+    """ Verifying correct action substitution for total-order planner. """
+    pddl_dir = os.path.join(os.getcwd(), 'pddl_files')
+    domain_file = pddl_dir + os.sep + 'blocks-domain.pddl'
+    problem_file = pddl_dir + os.sep + 'sussman-anomaly-problem.pddl'
+    expected_solution = [expr('Move_to_table(C, A)'), expr('Move(B, Table, C)'), expr('Move(A, Table, B)')]
+    pddl_test_case(domain_file, problem_file, expected_solution)
+

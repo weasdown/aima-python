@@ -421,16 +421,23 @@ def astar_search(problem, h=None, display=False):
 
 
 # ______________________________________________________________________________
-# A* heuristics 
+# A* heuristics
 
 class EightPuzzle(Problem):
     """ The problem of sliding tiles numbered from 1 to 8 on a 3x3 board, where one of the
     squares is a blank. A state is represented as a tuple of length 9, where  element at
     index i represents the tile number  at index i (0 if it's an empty square) """
 
+    """ The problem of sliding tiles numbered from 1 to 8 on a 3x3 board,
+    where one of the squares is a blank. A state is represented as a 3x3 list,
+    where element at index i,j represents the tile number (0 if it's an empty square) """
+
     def __init__(self, initial, goal=(1, 2, 3, 4, 5, 6, 7, 8, 0)):
         """ Define goal state and initialize a problem """
         super().__init__(initial, goal)
+
+        self.goal = goal
+        Problem.__init__(self, initial, goal)
 
     def find_blank_square(self, state):
         """Return the index of the blank square in a given state"""
@@ -487,7 +494,7 @@ class EightPuzzle(Problem):
         return inversion % 2 == 0
 
     def h(self, node):
-        """ Return the heuristic value for a given state. Default heuristic function used is 
+        """ Return the heuristic value for a given state. Default heuristic function used is
         h(n) = number of misplaced tiles """
 
         return sum(s != g for (s, g) in zip(node.state, self.goal))
@@ -673,7 +680,7 @@ def simulated_annealing(problem, schedule=exp_schedule()):
 
 
 def simulated_annealing_full(problem, schedule=exp_schedule()):
-    """ This version returns all the states encountered in reaching 
+    """ This version returns all the states encountered in reaching
     the goal state."""
     states = []
     current = Node(problem.initial)
