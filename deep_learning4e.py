@@ -6,8 +6,12 @@ import statistics
 import numpy as np
 from keras import Sequential, optimizers
 from keras.layers import Embedding, SimpleRNN, Dense
+<<<<<<< HEAD
 #from keras.preprocessing import sequence
 from keras.utils.data_utils import pad_sequences
+=======
+from keras.utils import pad_sequences
+>>>>>>> pr/1277
 
 from utils4e import (conv1D, gaussian_kernel, element_wise_product, vector_add, random_weights,
                      scalar_vector_product, map_vector, mean_squared_error_loss)
@@ -519,8 +523,11 @@ def keras_dataset_loader(dataset, max_length=500):
     # init dataset
     (X_train, y_train), (X_val, y_val) = dataset
     if max_length > 0:
+<<<<<<< HEAD
         #X_train = sequence.pad_sequences(X_train, maxlen=max_length)
         #X_val = sequence.pad_sequences(X_val, maxlen=max_length)
+=======
+>>>>>>> pr/1277
         X_train = pad_sequences(X_train, maxlen=max_length)
         X_val = pad_sequences(X_val, maxlen=max_length)
     return (X_train[10:], y_train[10:]), (X_val, y_val), (X_train[:10], y_train[:10])
