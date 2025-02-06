@@ -1,4 +1,4 @@
-from agents import *
+from agents4e import *
 from notebook import psource
 
 from random import choice
